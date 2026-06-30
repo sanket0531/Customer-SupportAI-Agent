@@ -1,0 +1,131 @@
+# ==========================
+# FastAPI
+# ==========================
+fastapi
+uvicorn[standard]
+python-multipart
+
+# ==========================
+# Database
+# ==========================
+sqlalchemy
+pyodbc
+alembic
+
+# ==========================
+# Authentication
+# ==========================
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt
+
+# ==========================
+# Environment Variables
+# ==========================
+python-dotenv
+
+# ==========================
+# Validation
+# ==========================
+pydantic
+pydantic-settings
+email-validator
+
+# ==========================
+# LangChain
+# ==========================
+langchain
+langchain-openai
+langchain-community
+langgraph
+
+# ==========================
+# OpenAI
+# ==========================
+openai
+tiktoken
+
+# ==========================
+# RAG
+# ==========================
+chromadb
+faiss-cpu
+
+# Embeddings
+sentence-transformers
+
+# Document Loaders
+pypdf
+pymupdf
+unstructured
+
+# ==========================
+# NLP
+# ==========================
+nltk
+spacy
+
+# ==========================
+# Machine Learning
+# ==========================
+numpy
+pandas
+scikit-learn
+joblib
+
+# ==========================
+# Deep Learning
+# ==========================
+tensorflow
+
+# ==========================
+# HTTP Requests
+# ==========================
+httpx
+requests
+
+# ==========================
+# Redis
+# ==========================
+redis
+
+# ==========================
+# Background Tasks
+# ==========================
+celery
+
+# ==========================
+# Email
+# ==========================
+aiosmtplib
+
+# ==========================
+# Logging
+# ==========================
+loguru
+
+# ==========================
+# Monitoring
+# ==========================
+prometheus-client
+
+# ==========================
+# Testing
+# ==========================
+pytest
+pytest-asyncio
+
+# ==========================
+# Utilities
+# ==========================
+orjson
+
+# ==========================
+# File Upload
+# ==========================
+aiofiles
+
+# ==========================
+# Docker Support
+# ==========================
+gunicorn
