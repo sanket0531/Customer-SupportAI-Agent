@@ -1,8 +1,8 @@
 from sqlalchemy import String, Integer, Boolean, Enum
-from sqlalchemy.orm import Mapped, mapped_column
-
+from sqlalchemy.orm import Mapped, mapped_column,  relationship
 from app.database.base import Base
 from app.models.enums import UserRole
+from app.models.ticket import Ticket
 
 
 class User(Base):
@@ -39,4 +39,16 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(
         Boolean,
         default=True
+    )
+
+    created_tickets: Mapped[list["Ticket"]] = relationship(
+        "Ticket",
+        foreign_keys="Ticket.customer_id",
+        back_populates="customer"
+    )
+
+    assigned_tickets: Mapped[list["Ticket"]] = relationship(
+        "Ticket",
+        foreign_keys="Ticket.assigned_agent_id",
+        back_populates="assigned_agent"
     )

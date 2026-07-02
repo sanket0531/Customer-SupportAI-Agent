@@ -1,4 +1,4 @@
-from chromadb.app import settings
+from app.core.config import settings
 from jose import JWTError, jwt
 
 def verify_access_token(token: str):

@@ -7,9 +7,8 @@ from app.database.session import get_db
 from app.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/auth/login"
+    tokenUrl="/api/v1/auth/token"
 )
-
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
@@ -23,7 +22,7 @@ def get_current_user(
             detail="Invalid or expired token"
         )
 
-    email = payload.get("sub")
+    email = payload.get("email")
 
     user = db.query(User).filter(User.email == email).first()
 

@@ -24,7 +24,7 @@ def register(
     return AuthService.register_user(db, user)
 
 @router.post("/login")
-def login(
+def login_json(
     login_data: LoginRequest,
     db: Session = Depends(get_db)
 ):
@@ -32,4 +32,18 @@ def login(
         db=db,
         email=login_data.email,
         password=login_data.password
+    )
+
+
+from fastapi.security import OAuth2PasswordRequestForm
+
+@router.post("/token")
+def login_oauth(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    return AuthService.login_user(
+        db=db,
+        email=form_data.username,
+        password=form_data.password
     )
