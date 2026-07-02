@@ -8,6 +8,9 @@ import app.models
 
 from app.api.v1.auth import router as auth_router
 
+
+
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(

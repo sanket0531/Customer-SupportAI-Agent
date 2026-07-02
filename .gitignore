@@ -31,3 +31,6 @@ Thumbs.db
 # Coverage
 .coverage
 htmlcov/
+
+#database 
+customer_support.sql
