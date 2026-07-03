@@ -3,7 +3,6 @@ from sqlalchemy import text
 
 from app.database.connection import engine
 
-import app.models
 
 from app.api.v1.tickets import router as ticket_router
 from app.api.v1.auth import router as auth_router

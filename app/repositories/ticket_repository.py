@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
 from app.models.ticket import Ticket
-from app.schemas.ticket import TicketCreate
 
 
 class TicketRepository:
@@ -32,6 +31,30 @@ class TicketRepository:
         db: Session
     ):
         return db.query(Ticket).all()
+
+    @staticmethod
+    def update_ticket(
+        db: Session,
+        ticket: Ticket,
+        updated_ticket
+    ):
+        ticket.title = updated_ticket.title
+        ticket.description = updated_ticket.description
+        ticket.status = updated_ticket.status
+        ticket.assigned_to_id = updated_ticket.assigned_to_id
+
+        db.commit()
+        db.refresh(ticket)
+        return ticket
+
+    @staticmethod
+    def save(
+        db: Session,
+        ticket: Ticket
+    ):
+        db.commit()
+        db.refresh(ticket)
+        return ticket
 
     @staticmethod
     def delete_ticket(

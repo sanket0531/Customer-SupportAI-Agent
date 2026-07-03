@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 from app.models.ticket import TicketPriority, TicketStatus
 
 
+
 class TicketCreate(BaseModel):
     title: str = Field(..., min_length=5, max_length=200)
     description: str = Field(..., min_length=10)
@@ -34,3 +35,6 @@ class TicketResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class AssignTicketRequest(BaseModel):
+    assigned_to_id: int    

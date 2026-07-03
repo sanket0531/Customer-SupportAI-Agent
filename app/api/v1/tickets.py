@@ -7,8 +7,10 @@ from app.models.user import User
 from app.schemas.ticket import (
     TicketCreate,
     TicketUpdate,
-    TicketResponse
+    TicketResponse,
+    AssignTicketRequest
 )
+from app.schemas.ticket_schema import AssignTicketRequest
 from app.services.ticket_service import TicketService
 
 router = APIRouter(
@@ -74,6 +76,23 @@ def update_ticket(
         db,
         ticket_id,
         ticket_data
+    )
+
+@router.put(
+    "/{ticket_id}/assign",
+    response_model=TicketResponse
+)
+def assign_ticket(
+    ticket_id: int,
+    assign_data: AssignTicketRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return TicketService.assign_ticket(
+        db=db,
+        ticket_id=ticket_id,
+        assign_data=assign_data,
+        current_user=current_user
     )
 
 
