@@ -10,8 +10,10 @@ from app.schemas.ticket import (
     TicketResponse,
     AssignTicketRequest
 )
-from app.schemas.ticket_schema import AssignTicketRequest
+from app.schemas.ticket_filter import TicketFilter
+from app.schemas.ticket_filter import TicketFilter
 from app.services.ticket_service import TicketService
+from app.schemas.pagination import PaginationParams, PaginatedResponse
 
 router = APIRouter(
     prefix="/tickets",
@@ -38,13 +40,20 @@ def create_ticket(
 
 @router.get(
     "/",
-    response_model=list[TicketResponse]
+    response_model=PaginatedResponse[TicketResponse]
 )
 def get_all_tickets(
+    pagination: PaginationParams = Depends(),
+    filters: TicketFilter = Depends(),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return TicketService.get_all_tickets(db)
+    return TicketService.get_all_tickets(
+        db=db,
+        page=pagination.page,
+        size=pagination.size,
+        filters=filters
+    )
 
 
 @router.get(
@@ -57,8 +66,9 @@ def get_ticket(
     current_user: User = Depends(get_current_user)
 ):
     return TicketService.get_ticket_by_id(
-        db,
-        ticket_id
+        db=db,
+        ticket_id=ticket_id,
+        current_user=current_user
     )
 
 
@@ -73,9 +83,10 @@ def update_ticket(
     current_user: User = Depends(get_current_user)
 ):
     return TicketService.update_ticket(
-        db,
-        ticket_id,
-        ticket_data
+        db=db,
+        ticket_id=ticket_id,
+        ticket_data=ticket_data,
+        current_user=current_user
     )
 
 @router.put(
@@ -103,6 +114,7 @@ def delete_ticket(
     current_user: User = Depends(get_current_user)
 ):
     return TicketService.delete_ticket(
-        db,
-        ticket_id
+        db=db,
+        ticket_id=ticket_id,
+        current_user=current_user
     )

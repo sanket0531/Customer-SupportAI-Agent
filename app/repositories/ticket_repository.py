@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.ticket import Ticket
-
+from app.schemas.ticket_filter import TicketFilter
 
 class TicketRepository:
 
@@ -28,9 +28,36 @@ class TicketRepository:
 
     @staticmethod
     def get_all_tickets(
-        db: Session
+        db: Session,
+        skip: int,
+        limit: int,
+        filters: TicketFilter
     ):
-        return db.query(Ticket).all()
+        query = db.query(Ticket)
+
+        # Apply filters dynamically
+        if filters.status is not None:
+            query = query.filter(Ticket.status == filters.status)
+
+        if filters.priority is not None:
+            query = query.filter(Ticket.priority == filters.priority)
+
+        if filters.assigned_agent_id is not None:
+            query = query.filter(
+                Ticket.assigned_agent_id == filters.assigned_agent_id
+            )
+
+        total = query.count()
+
+        tickets = (
+            query
+            .order_by(Ticket.id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+        return tickets, total
 
     @staticmethod
     def update_ticket(
