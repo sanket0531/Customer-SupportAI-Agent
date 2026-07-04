@@ -3,13 +3,11 @@ from sqlalchemy.orm import Session
 
 from app.models import ticket
 from app.models.ticket import Ticket, TicketStatus
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.repositories.ticket_repository import TicketRepository
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.ticket import TicketCreate, TicketResponse, TicketUpdate
+from app.schemas.ticket import TicketCreate, TicketResponse, TicketUpdate, AssignTicketRequest
 
-from app.schemas.ticket import AssignTicketRequest
-from app.models.user import UserRole
 from app.repositories.user_repository import UserRepository
 from app.schemas.ticket_filter import TicketFilter
 
@@ -40,7 +38,7 @@ class TicketService:
         Validates whether the current user has permission
         to access the specified ticket.
         """
-
+        
         # Admins can access everything.
         if current_user.role == UserRole.ADMIN:
             return
@@ -87,18 +85,44 @@ class TicketService:
     @staticmethod
     def get_all_tickets(
         db: Session,
+        current_user: User,
         page: int,
         size: int,
         filters: TicketFilter
     ):
         skip = (page - 1) * size
 
-        tickets, total = TicketRepository.get_all_tickets(
-            db=db,
-            skip=skip,
-            limit=size,
-            filters=filters
-        )
+        print("========== DEBUG ==========")
+        print("User ID:", current_user.id)
+        print("User Role:", current_user.role)
+        print("Role Type:", type(current_user.role))
+        print("===========================")
+
+        if current_user.role == UserRole.ADMIN:
+            tickets, total = TicketRepository.get_all_tickets(
+                db=db,
+                skip=skip,
+                limit=size,
+                filters=filters
+            )
+
+        elif current_user.role == UserRole.AGENT:
+            tickets, total = TicketRepository.get_agent_tickets(
+                db=db,
+                agent_id=current_user.id,
+                skip=skip,
+                limit=size,
+                filters=filters
+            )
+
+        else:
+            tickets, total = TicketRepository.get_customer_tickets(
+                db=db,
+                customer_id=current_user.id,
+                skip=skip,
+                limit=size,
+                filters=filters
+            )
 
         return PaginatedResponse[TicketResponse].create(
             items=tickets,

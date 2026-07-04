@@ -11,7 +11,6 @@ from app.schemas.ticket import (
     AssignTicketRequest
 )
 from app.schemas.ticket_filter import TicketFilter
-from app.schemas.ticket_filter import TicketFilter
 from app.services.ticket_service import TicketService
 from app.schemas.pagination import PaginationParams, PaginatedResponse
 
@@ -50,11 +49,11 @@ def get_all_tickets(
 ):
     return TicketService.get_all_tickets(
         db=db,
+        current_user=current_user,
         page=pagination.page,
         size=pagination.size,
         filters=filters
     )
-
 
 @router.get(
     "/{ticket_id}",
