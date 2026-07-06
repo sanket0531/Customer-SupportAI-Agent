@@ -14,12 +14,11 @@ class TicketCreate(BaseModel):
 
 
 class TicketUpdate(BaseModel):
-    title: Optional[str] = Field(default=None, min_length=5, max_length=200)
-    description: Optional[str] = Field(default=None, min_length=10)
+    title: Optional[str] = None
+    description: Optional[str] = None
     status: Optional[TicketStatus] = None
     priority: Optional[TicketPriority] = None
     assigned_agent_id: Optional[int] = None
-
 
 class TicketResponse(BaseModel):
     id: int
@@ -37,4 +36,4 @@ class TicketResponse(BaseModel):
     }
 
 class AssignTicketRequest(BaseModel):
-    assigned_to_id: int    
+    assigned_agent_id: int    

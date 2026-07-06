@@ -7,3 +7,9 @@ class UpdateTicketRequest(BaseModel):
     title: str
     description: str
     status: str
+
+class TicketUpdate(BaseModel):
+    title: str
+    description: str
+    status: str
+    

@@ -64,6 +64,7 @@ def get_ticket(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    print("ROUTER RECEIVED:", ticket_data.model_dump())
     return TicketService.get_ticket_by_id(
         db=db,
         ticket_id=ticket_id,

@@ -11,7 +11,76 @@ from app.schemas.ticket import TicketCreate, TicketResponse, TicketUpdate, Assig
 from app.repositories.user_repository import UserRepository
 from app.schemas.ticket_filter import TicketFilter
 
+ALLOWED_STATUS_TRANSITIONS = {
+    TicketStatus.OPEN: [
+        TicketStatus.IN_PROGRESS
+    ],
+    TicketStatus.IN_PROGRESS: [
+        TicketStatus.RESOLVED
+    ],
+    TicketStatus.RESOLVED: [
+        TicketStatus.CLOSED
+    ],
+    TicketStatus.CLOSED: []
+}
+
 class TicketService:
+
+    @staticmethod
+    def validate_status_transition(
+        current_status: TicketStatus,
+        new_status: TicketStatus
+    ):
+        allowed_statuses = ALLOWED_STATUS_TRANSITIONS.get(
+            current_status,
+            []
+        )
+
+        if new_status not in allowed_statuses:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    f"Cannot change ticket status from "
+                    f"{current_status.value} to {new_status.value}."
+                )
+            )
+        
+    @staticmethod
+    def validate_status_permission(
+        current_user: User,
+        current_status: TicketStatus,
+        new_status: TicketStatus
+    ):
+        # Admin can perform any valid transition
+        if current_user.role == UserRole.ADMIN:
+            return
+
+        # Agent permissions
+        if current_user.role == UserRole.AGENT:
+            if (
+                current_status == TicketStatus.OPEN
+                and new_status == TicketStatus.IN_PROGRESS
+            ):
+                return
+
+            if (
+                current_status == TicketStatus.IN_PROGRESS
+                and new_status == TicketStatus.RESOLVED
+            ):
+                return
+
+        # Customer permissions
+        if current_user.role == UserRole.CUSTOMER:
+            if (
+                current_status == TicketStatus.RESOLVED
+                and new_status == TicketStatus.CLOSED
+            ):
+                return
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to perform this status transition."
+        )    
 
     @staticmethod
     def create_ticket(
@@ -92,12 +161,6 @@ class TicketService:
     ):
         skip = (page - 1) * size
 
-        print("========== DEBUG ==========")
-        print("User ID:", current_user.id)
-        print("User Role:", current_user.role)
-        print("Role Type:", type(current_user.role))
-        print("===========================")
-
         if current_user.role == UserRole.ADMIN:
             tickets, total = TicketRepository.get_all_tickets(
                 db=db,
@@ -140,17 +203,33 @@ class TicketService:
     ):
         ticket = TicketRepository.get_ticket_by_id(db, ticket_id)
 
+
         if not ticket:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Ticket not found"
             )
+        
+        print("Current Status:", ticket.status)
+        print("Requested Status:", ticket_data.status)
+        print("Update Data:", ticket_data.model_dump())
         TicketService._validate_ticket_access(
             ticket=ticket,
             current_user=current_user
         )    
 
+        # Validate status transition only if status is being updated
+        if ticket_data.status is not None:
+            TicketService.validate_status_transition(
+                ticket.status,
+                ticket_data.status
+            )
 
+        TicketService.validate_status_permission(
+            current_user=current_user,
+            current_status=ticket.status,
+            new_status=ticket_data.status
+        )
         update_data = ticket_data.model_dump(exclude_unset=True)
 
         for key, value in update_data.items():
