@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column,  relationship
 from app.database.base import Base
 from app.models.enums import UserRole
 from app.models.ticket import Ticket
+from app.models.ticket_comment import TicketComment
 
 
 class User(Base):
@@ -51,4 +52,9 @@ class User(Base):
         "Ticket",
         foreign_keys="Ticket.assigned_agent_id",
         back_populates="assigned_agent"
+    )
+
+    comments: Mapped[list["TicketComment"]] = relationship(
+        "TicketComment",
+        back_populates="user"
     )

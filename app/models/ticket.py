@@ -4,6 +4,10 @@ import enum
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from app.models.ticket_comment import TicketComment
+
+
+if TYPE_CHECKING:
     from app.models.user import User
     
 from sqlalchemy import String, Integer, Text, DateTime, Enum, ForeignKey
@@ -90,4 +94,11 @@ class Ticket(Base):
         "User",
         foreign_keys=[assigned_agent_id],
         back_populates="assigned_tickets"
+    )
+
+
+    comments: Mapped[list["TicketComment"]] = relationship(
+        "TicketComment",
+        back_populates="ticket",
+        cascade="all, delete-orphan"
     )
