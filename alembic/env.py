@@ -3,7 +3,8 @@ from app.database.base import Base
 
 # Import all models here
 from app.models.user import User
-
+from app.models.ticket import Ticket
+from app.models.ticket_comment import TicketComment
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
